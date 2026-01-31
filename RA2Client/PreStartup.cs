@@ -244,10 +244,23 @@ namespace Ra2Client
 
             ProgramConstants.DisplayErrorAction("KABOOOOOOOM".L10N("UI:Main:FatalErrorTitle"), error, true);
         }
-
+        
         [SupportedOSPlatform("windows")]
         private static void CheckPermissions()
         {
+            // Wine 下：使用物理写入测试，跳过 Windows ACL / Token
+            if (ClientCore.PlatformHelper.IsWine())
+            {
+                if (HasWriteAccessByIOTest(ProgramConstants.GamePath))
+                    return;
+        
+                ProgramConstants.DisplayErrorAction(
+                    "Write access required",
+                    "The game directory is not writable. Please move the game to a writable location.",
+                    true);
+                Environment.Exit(1);
+            }
+        
             if (UserHasDirectoryAccessRights(ProgramConstants.GamePath, FileSystemRights.Modify))
                 return;
 

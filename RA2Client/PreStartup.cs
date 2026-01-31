@@ -343,5 +343,26 @@ namespace Ra2Client
             }
             return isInRoleWithAccess;
         }
+        private static bool HasWriteAccessByIOTest(string directoryPath)
+        {
+            try
+            {
+                string testFilePath = Path.Combine(
+                    directoryPath,
+                    $".write_test_{Guid.NewGuid():N}.tmp"
+                );
+        
+                File.WriteAllText(testFilePath, "test");
+                File.Delete(testFilePath);
+        
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Wine IO write test failed: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 }
